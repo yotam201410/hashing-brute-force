@@ -5,7 +5,7 @@ import hashlib
 from typing import List
 
 AMOUNT_OF_CORES = multiprocessing.cpu_count()
-IP = "192.168.1.106"
+IP = "10.168.63.118"
 PORT = 5555
 MAX_BYTES = 1024
 
@@ -20,29 +20,27 @@ def looping_found(start_value, end_value, thread, return_socket, results: List):
             return_socket.send(str(i).encode())
             results[thread] = i
             return i
-        if i == "3735928559":
-            print("PROBLEM")
-            raise AttributeError
+        
 
 
 def main():
     c = socket.socket()
     c.connect((IP, PORT))
+    print("Connected")
     c.send(str(AMOUNT_OF_CORES).encode())
     message = c.recv(MAX_BYTES).decode()
-    print(message)
     amount_of_numbers = int(float(c.recv(MAX_BYTES).decode()))
     start_point = int(float(c.recv(MAX_BYTES).decode()))
     threads = []
+    print(f"{start_point} - {start_point + AMOUNT_OF_CORES*amount_of_numbers}")
     results = [None] * AMOUNT_OF_CORES
-    print(results)
     for i in range(AMOUNT_OF_CORES):
         thread = threading.Thread(target=looping_found,
-                                  args=(3735928559 + i * amount_of_numbers, (i + 1) * amount_of_numbers + 3735928559, i,
+                                  args=(start_point + i * amount_of_numbers, (i + 1) * amount_of_numbers + start_point, i,
                                         c, results))
         thread.start()
         threads.append(thread)
-    print("GOT TO HEREE")
+    print("GOT TO HERE")
     while True:
         for _thread in threads:
             if not _thread.is_alive():

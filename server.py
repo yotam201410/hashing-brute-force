@@ -8,12 +8,12 @@ from Computer import Computer
 
 MAX_MSG_LENGTH = 1024
 SERVER_PORT = 5555
-SERVER_IP = '192.168.1.106'
+SERVER_IP = '10.168.63.118'
 MIN = 10 ** 9
 MAX = 10 ** 10
 
 
-def get_computer(computers: List[Computer], __socket) -> Computer | None:
+def get_computer(computers: List[Computer], __socket):
     host, port = __socket.getpeername()
     for __computer in computers:
         if __computer.port == port and host == __computer.ip:
@@ -28,11 +28,11 @@ def print_result(computer: Computer, __socket):
 
 
 def main():
-    print("Setting up server...")
+    print("[+] Setting up server...")
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((SERVER_IP, SERVER_PORT))
     server_socket.listen()
-    print("Listening for clients...")
+    print("[+] Listening for clients...")
     computers_connected = []
     client_sockets = []
     messages_to_send = []
@@ -41,7 +41,7 @@ def main():
         for current_socket in rlist:
             if current_socket is server_socket:
                 connection, client_address = current_socket.accept()
-                print("New client joined!", client_address)
+                print("[+] New client joined!", client_address)
                 client_sockets.append(connection)
             else:
                 data = current_socket.recv(MAX_MSG_LENGTH).decode()
@@ -59,7 +59,7 @@ def main():
     amount_of_available_cores = sum([int(x.cores) for x in computers_connected])
     amount_of_numbers_per_thread = (MAX - MIN) / amount_of_available_cores
     current_range = MIN
-    print(amount_of_numbers_per_thread)
+    print(f"The amount of possible numbers per thread is: {amount_of_numbers_per_thread}")
 
     for i, __socket in enumerate(wlist):
         computer = get_computer(computers_connected, __socket)
